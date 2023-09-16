@@ -25,3 +25,4 @@ train = torchvision.datasets.MNIST(root='/ssd_scratch/cvit/anirudhkaushik/datase
 test = torchvision.datasets.MNIST(root='/ssd_scratch/cvit/anirudhkaushik/datasets/', train=False, download=False, transform=data_transforms)
 
 data_loader = DataLoader(torch.utils.data.ConcatDataset([train, test]), batch_size=BATCH_SIZE, shuffle=True)
+
