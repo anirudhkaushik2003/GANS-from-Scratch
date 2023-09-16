@@ -10,7 +10,13 @@ class Block(nn.Module):
         super(Block, self).__init__()
         self.conv = nn.Conv2d(in_ch, out_ch, 5, padding='same')
         self.bnorm = nn.BatchNorm2d(out_ch)
-        self.pool = nn.MaxPool2d(2, 2)
+        # self.pool = nn.MaxPool2d(2, 2)
+        # replace pooling with strided convolutions
+        self.pool = nn.Conv2d(out_ch, out_ch, 2, stride=2)
+        # output size = (input_size - kernel_size + 2*padding)/stride + 1 = (32 - 2 + 2*0)/2 + 1 = 16
+        # used leaky relu for stable training
+        # used batchnorm for stable training
+        # didn't use any fully connected hidden layers
         self.relu = nn.LeakyReLU(0.2)
 
     def forward(self, x):
