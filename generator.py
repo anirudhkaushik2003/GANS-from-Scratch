@@ -8,7 +8,7 @@ import numpy as np
 class Block(nn.Module):
     def __init__(self, in_ch, out_ch):
         super(Block, self).__init__()
-        self.conv = nn.ConvTranspose2d(in_ch, out_ch, 5, padding='same', bias=False)
+        self.conv = nn.ConvTranspose2d(in_ch, out_ch, 5, bias=False)
         self.bnorm = nn.BatchNorm2d(out_ch)
         self.relu = nn.LeakyReLU(0.2)
 
