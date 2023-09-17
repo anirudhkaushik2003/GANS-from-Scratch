@@ -47,7 +47,6 @@ class Discriminator(nn.Module):
         x = self.conv2(x)
         x = self.conv3(x)
         x = self.conv4(x)
-
         x = self.out(x)
         x = self.out_act(x)
         x = nn.Flatten()(x) # 1x1x1 -> 1x1

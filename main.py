@@ -68,7 +68,7 @@ for epoch in range(num_epochs):
         # Train only D model
         modelD.zero_grad()
         real_images = batch[0].to(device)
-        real_labels = torch.full((BATCH_SIZE,), real, device=device)
+        real_labels = torch.full((batch[0].shape[0] ,), real, device=device)
 
         output = modelD(real_images).view(-1)
         lossD_real = criterion(output, real_labels)
@@ -76,9 +76,9 @@ for epoch in range(num_epochs):
         D_x = output.mean().item()
 
 
-        noise = torch.randn(BATCH_SIZE, 100, 1, 1, device=device) # use gaussian noise instead of uniform
+        noise = torch.randn(batch[0].shape[0] , 100, 1, 1, device=device) # use gaussian noise instead of uniform
         fake_images = modelG(noise)
-        fake_labels = torch.full((BATCH_SIZE,), fake, device=device)
+        fake_labels = torch.full((batch[0].shape[0] ,), fake, device=device)
 
         output = modelD(fake_images.detach()).view(-1)
         lossD_fake = criterion(output, fake_labels)
@@ -99,8 +99,11 @@ for epoch in range(num_epochs):
 
         optimG.step()
 
-        if step%20 == 0:
-            print(f"Epoch: {epoch}, step: {step:03d}, LossD: {lossD.item()}, LossG: {lossG.item()}, D(x): {D_x}, D(G(z)): {D_G_z1:.2f }/{D_G_z2:.2f}")
+        if step%100 == 0:
+            # print(f"Epoch: {epoch}, step: {step:03d}, LossD: {lossD.item()}, LossG: {lossG.item()}, D(x): {D_x}, D(G(z)): {D_G_z1:02f }/{D_G_z2:02f}")
+            # limit loss to 2 decimal places
+            print(f"Epoch: {epoch}, step: {step:03d}, LossD: {lossD.item():.2f}, LossG: {lossG.item():.2f}, D(x): {D_x:.2f}, D(G(z)): {D_G_z1:.2f}/{D_G_z2:.2f}")
+        if epoch%5 == 0:
             create_checkpoint(modelG, optimG, epoch, lossG.item(), type="G")
             create_checkpoint(modelD, optimD, epoch, lossD.item(), type="D")
 

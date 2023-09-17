@@ -8,7 +8,7 @@ import numpy as np
 class Block(nn.Module):
     def __init__(self, in_ch, out_ch):
         super(Block, self).__init__()
-        self.conv = nn.ConvTranspose2d(in_ch, out_ch, 5, bias=False)
+        self.conv = nn.ConvTranspose2d(in_ch, out_ch, 4,2,1, bias=False)
         self.bnorm = nn.BatchNorm2d(out_ch)
         self.relu = nn.LeakyReLU(0.2)
 
@@ -30,7 +30,11 @@ class Generator(nn.Module):
 
 
         
-        self.project = Block(100, self.in_ch)
+        self.project = nn.Sequential(
+            nn.ConvTranspose2d(100, self.in_ch, 4,1,0, bias=False),
+            nn.BatchNorm2d(self.in_ch),
+            nn.LeakyReLU(0.2)
+        )
         self.conv1 = Block(self.in_ch, self.in_ch//2)
         self.conv2 = Block(self.in_ch//2, self.in_ch//4)
         self.conv3 = Block(self.in_ch//4, self.in_ch//8)
@@ -40,7 +44,8 @@ class Generator(nn.Module):
         self.out_act = nn.Tanh()
 
     def forward(self, x):
-        x = self.conv1(self.project(x))
+        x = self.project(x)
+        x = self.conv1(x)
         x = self.conv2(x)
         x = self.conv3(x)
         x = self.out(x)
