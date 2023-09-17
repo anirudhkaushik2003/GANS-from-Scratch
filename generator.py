@@ -47,4 +47,5 @@ class Generator(nn.Module):
         x = self.out_act(x)
 
         return x
+    
 

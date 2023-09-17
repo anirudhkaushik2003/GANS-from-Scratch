@@ -55,4 +55,45 @@ optimG = torch.optim.Adam(modelG.parameters(), lr=learning_rate, betas=(0.5, 0.9
 
 num_epochs = 100
 
+for epoch in range(num_epochs):
+
+    for step, batch in enumerate(data_loader):
+
+
+        # Train only D model
+        modelD.zero_grad()
+        real_images = batch[0].to(device)
+        real_labels = torch.full((BATCH_SIZE,), real, device=device)
+
+        output = modelD(real_images).view(-1)
+        lossD_real = criterion(output, real_labels)
+        lossD_real.backward()
+        D_x = output.mean().item()
+
+
+        noise = torch.randn(BATCH_SIZE, 100, 1, 1, device=device) # use gaussian noise instead of uniform
+        fake_images = modelG(noise)
+        fake_labels = torch.full((BATCH_SIZE,), fake, device=device)
+
+        output = modelD(fake_images.detach()).view(-1)
+        lossD_fake = criterion(output, fake_labels)
+
+        lossD_fake.backward()
+        D_G_z1 = output.mean().item()
+
+        lossD = lossD_real + lossD_fake
+        optimD.step()
+
+        # Train only G model
+        modelG.zero_grad()
+        fake_labels.fill_(real) # use value of 1 so Generator tries to produce real images
+        output = modelD(fake_images).view(-1)
+        lossG = criterion(output, fake_labels)
+        lossG.backward()
+        D_G_z2 = output.mean().item()
+
+        optimG.step()
+
+        if step%20 == 0:
+            print(f"Epoch: {epoch}, step: {step:03d}, LossD: {lossD.item()}, LossG: {lossG.item()}, D(x): {D_x}, D(G(z)): {D_G_z1:.2f }/{D_G_z2:.2f}")
 
