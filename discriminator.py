@@ -8,7 +8,7 @@ import PIL
 class Block(nn.Module):
     def __init__(self, in_ch, out_ch):
         super(Block, self).__init__()
-        self.conv = nn.Conv2d(in_ch, out_ch, 5, padding='same')
+        self.conv = nn.Conv2d(in_ch, out_ch, 4, padding='same')
         self.bnorm = nn.BatchNorm2d(out_ch)
         # self.pool = nn.MaxPool2d(2, 2)
         # replace pooling with strided convolutions
