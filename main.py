@@ -12,7 +12,7 @@ import torchvision
 import os
 from generator import Generator
 from discriminator import Discriminator
-from utils import weights_init
+from utils import weights_init, create_checkpoint, restart_last_checkpoint
 
 import torchvision.utils as vutils
 
@@ -55,6 +55,11 @@ optimG = torch.optim.Adam(modelG.parameters(), lr=learning_rate, betas=(0.5, 0.9
 
 num_epochs = 100
 
+# check if checkpoint exists and load it
+if os.path.exists('/ssd_scratch/cvit/anirudhkaushik/checkpoints/gan_checkpoint_latest.pt'):
+    restart_last_checkpoint(modelG, optimG, type="G")
+    restart_last_checkpoint(modelD, optimD, type="D")
+
 for epoch in range(num_epochs):
 
     for step, batch in enumerate(data_loader):
@@ -96,4 +101,8 @@ for epoch in range(num_epochs):
 
         if step%20 == 0:
             print(f"Epoch: {epoch}, step: {step:03d}, LossD: {lossD.item()}, LossG: {lossG.item()}, D(x): {D_x}, D(G(z)): {D_G_z1:.2f }/{D_G_z2:.2f}")
+            create_checkpoint(modelG, optimG, epoch, lossG.item(), type="G")
+            create_checkpoint(modelD, optimD, epoch, lossD.item(), type="D")
+
+
 
