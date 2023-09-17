@@ -49,11 +49,12 @@ modelD.apply(weights_init)
 fixed_noise = torch.randn(BATCH_SIZE, 100, 1, 1, device='cuda')
 real = 1.0
 fake = 0.0
-learning_rate = 1e-3
+learning_rate = 2e-3
 optimD = torch.optim.Adam(modelD.parameters(), lr=learning_rate, betas=(0.5, 0.999))
 optimG = torch.optim.Adam(modelG.parameters(), lr=learning_rate, betas=(0.5, 0.999))
 
 num_epochs = 100
+save_freq = 1
 
 # check if checkpoint exists and load it
 if os.path.exists('/ssd_scratch/cvit/anirudhkaushik/checkpoints/gan_checkpoint_latest.pt'):
@@ -103,7 +104,7 @@ for epoch in range(num_epochs):
             # print(f"Epoch: {epoch}, step: {step:03d}, LossD: {lossD.item()}, LossG: {lossG.item()}, D(x): {D_x}, D(G(z)): {D_G_z1:02f }/{D_G_z2:02f}")
             # limit loss to 2 decimal places
             print(f"Epoch: {epoch}, step: {step:03d}, LossD: {lossD.item():.2f}, LossG: {lossG.item():.2f}, D(x): {D_x:.2f}, D(G(z)): {D_G_z1:.2f}/{D_G_z2:.2f}")
-        if epoch%5 == 0:
+        if epoch%save_freq == 0:
             create_checkpoint(modelG, optimG, epoch, lossG.item(), type="G")
             create_checkpoint(modelD, optimD, epoch, lossD.item(), type="D")
 
