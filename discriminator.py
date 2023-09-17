@@ -33,13 +33,14 @@ class Discriminator(nn.Module):
         super(Discriminator, self).__init__()
         self.img_channels = img_channels
 
-        self.conv1 = Block(img_channels, 64)
-        self.conv2 = Block(64, 128)
-        self.conv3 = Block(128, 256)
-        self.conv4 = Block(256, 512)
+        self.conv1 = Block(img_channels, 64) # 32x32x1 -> 16x16x64
+        self.conv2 = Block(64, 128) # 16x16x64 -> 8x8x128
+        self.conv3 = Block(128, 256) # 8x8x128 -> 4x4x256 
+        self.conv4 = Block(256, 512) # 4x4x256 -> 2x2x512
         
 
-        self.fc = nn.Linear(512, 1)
+        self.out = nn.Conv2d(512, 1, 2 ) # 2x2x512 -> 1x1x1
+        self.out_act = nn.Sigmoid()
 
     def forward(self, x):
         x = self.conv1(x)
@@ -47,7 +48,9 @@ class Discriminator(nn.Module):
         x = self.conv3(x)
         x = self.conv4(x)
 
-        x = nn.Flatten()(x)
-        x = self.fc(x)
+        x = self.out(x)
+        x = self.out_act(x)
+        x = nn.Flatten()(x) # 1x1x1 -> 1x1
+
         
         return x
