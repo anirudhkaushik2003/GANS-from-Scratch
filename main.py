@@ -47,8 +47,8 @@ modelG.apply(weights_init)
 modelD.apply(weights_init)
 
 fixed_noise = torch.randn(BATCH_SIZE, 100, 1, 1, device='cuda')
-real = 1
-fake = 0
+real = 1.0
+fake = 0.0
 learning_rate = 1e-3
 optimD = torch.optim.Adam(modelD.parameters(), lr=learning_rate, betas=(0.5, 0.999))
 optimG = torch.optim.Adam(modelG.parameters(), lr=learning_rate, betas=(0.5, 0.999))
